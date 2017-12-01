@@ -3,12 +3,6 @@
             [clojure.java.shell :refer [sh]])
   (:gen-class))
 
-;; Try this option
-;; espeak -ven+f3 -k5 -s150
-
-(def tts ["espeak" "-ven+f3" "-k5" "-s150"])
-;;(def tts ["say" "-vFred"])
-
 (defn input-word []
   (println "Your answer:")
   (read-line))
@@ -18,18 +12,10 @@
     (rand-int (dec (count words)))
     (nth words)))
 
-;(defmulti speak (fn [os _] os))
-;
-;(defmethod speak :linux [word]
-;  (sh "espeak" "-v" "english-us" word))
-;
-;(defmethod speak :osx [word]
-;  (sh "say" word))
-
-(defn speak [word]
+(defn speak [tts word]
   (apply sh (concat tts [(format "\"The next word is, %s\"" word)])))
 
-(defn verify-word [w answer]
+(defn verify-word [w answer tts]
   (if (= w answer)
     (do
       (println "Correct!")
@@ -37,11 +23,10 @@
     (println (str "Sorry, correct answer is " w))))
 
 (defn quiz [cfg]
-  (let [{:keys [os words]} (cfg/mk-cfg)]
+  (let [{:keys [tts words]} (cfg/mk-cfg)]
     (doseq [w words]
-      (speak w)
-      (verify-word w (input-word)))))
-
+      (speak tts w)
+      (verify-word w (input-word) tts))))
 
 (defn -main
   "Start the quiz"

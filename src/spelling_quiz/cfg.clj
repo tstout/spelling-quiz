@@ -7,6 +7,10 @@
   (with-open [r (io/reader fname)]
     (doall (line-seq r))))
 
+(def tts
+  {:linux ["espeak" "-ven+f3" "-k5" "-s150"]
+   :osx   ["say" "-vFred"]})
+
 (defn load-words []
   (->
     "spelling-words.txt"
@@ -27,4 +31,4 @@
 
 (defn mk-cfg []
   {:words (load-words)
-   :os (os)})
+   :tts    (tts (os))})
